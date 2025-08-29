@@ -1,0 +1,8 @@
+pandas
+numpy
+faiss-cpu
+sentence-transformers>=2.2.2
+scikit-learn
+streamlit
+rank-bm25
+pyarrow
