@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Simple entrypoint for container:
+# 1. If index files (data/books.index & data/books.parquet & data/meta.pkl) are missing, build them.
+# 2. Launch Streamlit.
+
+APP_DIR="/home/appuser/app"
+DATA_DIR="${APP_DIR}/data"
+BOOKS_CSV="${DATA_DIR}/books_sample.csv"
+INDEX_FILE="${DATA_DIR}/books.index"
+PARQUET_FILE="${DATA_DIR}/books.parquet"
+META_FILE="${DATA_DIR}/meta.pkl"
+
+# Ensure permissions (useful when mounted from host)
+if [ -d "${DATA_DIR}" ]; then
+  chmod -R a+rw "${DATA_DIR}" || true
+fi
+
+# Build index if missing
+if [ ! -f "${INDEX_FILE}" ] || [ ! -f "${PARQUET_FILE}" ] || [ ! -f "${META_FILE}" ]; then
+  echo "Index or artifacts missing — building embeddings and FAISS index..."
+  # allow user to override model via env var BUILD_MODEL (e.g., sentence-transformers/all-mpnet-base-v2)
+  MODEL="${BUILD_MODEL:-sentence-transformers/all-MiniLM-L6-v2}"
+  python src/build_index.py --data "${BOOKS_CSV}" --out_dir "${DATA_DIR}" --model "${MODEL}"
+  echo "Build completed."
+else
+  echo "Index artifacts found — skipping build."
+fi
+
+# Start Streamlit app
+echo "Starting Streamlit on port 8501..."
+# Bind to 0.0.0.0 so it's reachable from outside container
+streamlit run app.py --server.port 8501 --server.address 0.0.0.0
