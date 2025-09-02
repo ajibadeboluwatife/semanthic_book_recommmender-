@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  recommender:
+    build: .
+    container_name: semantic_book_recommender
+    ports:
+      - "8501:8501"
+    # Mount local project for quick iterative dev (optional).
+    # If you mount, the Dockerfile COPY contents are overridden by bind mount.
+    # Uncomment the next line to enable.
+    # volumes:
+    #   - ./:/home/appuser/app
+    environment:
+      # Optional: override model to use when building index (space-separated if you modify script)
+      # BUILD_MODEL: "sentence-transformers/all-mpnet-base-v2"
+      PYTHONUNBUFFERED: "1"
+    restart: unless-stopped
