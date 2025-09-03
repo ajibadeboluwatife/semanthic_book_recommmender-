@@ -11,4 +11,4 @@ No external API keys required.
 - Optional hybrid search with BM25 keyword scoring
 - Streamlit UI with filters (genre, year range, min rating)
 
-## Project structure
+## Project structure new onw 
