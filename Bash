@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Simple entrypoint for container:
-# 1. If index files (data/books.index & data/books.parquet & data/meta.pkl) are missing, build them.
-# 2. Launch Streamlit.
-
 APP_DIR="/home/appuser/app"
 DATA_DIR="${APP_DIR}/data"
 BOOKS_CSV="${DATA_DIR}/books_sample.csv"
@@ -12,12 +8,10 @@ INDEX_FILE="${DATA_DIR}/books.index"
 PARQUET_FILE="${DATA_DIR}/books.parquet"
 META_FILE="${DATA_DIR}/meta.pkl"
 
-# Ensure permissions (useful when mounted from host)
+
 if [ -d "${DATA_DIR}" ]; then
   chmod -R a+rw "${DATA_DIR}" || true
 fi
-
-# Build index if missing
 if [ ! -f "${INDEX_FILE}" ] || [ ! -f "${PARQUET_FILE}" ] || [ ! -f "${META_FILE}" ]; then
   echo "Index or artifacts missing — building embeddings and FAISS index..."
   # allow user to override model via env var BUILD_MODEL (e.g., sentence-transformers/all-mpnet-base-v2)
